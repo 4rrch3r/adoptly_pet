@@ -1,0 +1,891 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Adoptly",
+    "description": "Easy platform to adopt a furry friends 😸"
+  },
+  "host": "localhost:3000",
+  "basePath": "/adoptly",
+  "schemes": ["http"],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authorization routes"
+    },
+    {
+      "name": "user",
+      "description": "User routes with user rights"
+    },
+    {
+      "name": "pet",
+      "description": "Pet routes"
+    },
+    {
+      "name": "user(admin)",
+      "description": "User routes with admin rights"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Register your account",
+        "description": "Registration with such unique fields: email,phoneNumber. Sends an activation link to the user's email after successful registration.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User's object that needs to be added ",
+            "required": true,
+            "schema": { "$ref": "#/definitions/User" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Ihor Pilipchuk" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMail@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010101" },
+                "password": {
+                  "type": "string",
+                  "example": "$2b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517556",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32533"
+                },
+                "isActivated": { "type": "boolean", "example": false },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Name,email,password,phone number required"
+          },
+          "500": {
+            "description": "Duplicate key error"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Log in into your account",
+        "description": "Returns a cookie with access_token and rights",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "exampleMail@gmail.com"
+                },
+                "password": {
+                  "example": "examplePassword123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "login success"
+          },
+          "400": {
+            "description": "Email,password required"
+          },
+          "401": {
+            "description": "Password is incorrect"
+          },
+          "404": {
+            "description": "User was not found"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Log out of your account",
+        "description": "Erases access_token from cookies",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Logout success"
+          }
+        }
+      }
+    },
+    "/auth/activate/{link}": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Activate your account",
+        "description": "Activates user's account after user pressed on activation link. In case of success, user will be redirected to main page.",
+        "parameters": [
+          {
+            "name": "link",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "User was not found"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get information about your account",
+        "description": "Sends a user's data that was found by id that was taken from access_token's payload.Read rights required.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Ihor Pilipchuk" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMail@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010101" },
+                "password": {
+                  "type": "string",
+                  "example": "$2b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517556",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32533"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User was not found"
+          },
+          "400": {
+            "description": "Your account was not activated"
+          }
+        }
+      },
+      "put": {
+        "tags": ["user"],
+        "summary": "Change info about your account",
+        "description": "Changes a user's data by id that was taken from access_token's payload.Read rights required.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMailChanged@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010111" },
+                "password": {
+                  "type": "string",
+                  "example": "changedPassword"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517551",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32531"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMailChanged@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010111" },
+                "password": {
+                  "type": "string",
+                  "example": "12b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517551",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32531"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User was not found"
+          },
+          "400": {
+            "description": "Your account was not activated"
+          }
+        }
+      }
+    },
+    "/pets/": {
+      "get": {
+        "tags": ["pet"],
+        "produces": ["application/json"],
+        "description": "Returns a list of pets .No rights required",
+        "summary": "Get current list of pets. ",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Pet" }
+          }
+        }
+      },
+      "post": {
+        "tags": ["pet"],
+        "description": "Adds a pet to the pet list. Write rights required.",
+        "summary": "Add a pet",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet's object that needs to be added ",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Pet" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "required": ["name", "species", "breed", "age", "sex"],
+              "properties": {
+                "name": { "type": "string", "example": "Amy" },
+                "species": { "type": "string", "example": "dog" },
+                "breed": {
+                  "type": "string",
+                  "example": "Louisiana Catahoula Leopard Dog"
+                },
+                "age": { "type": "string", "example": "8 years" },
+                "sex": { "type": "string", "example": "Female" },
+                "taken": { "type": "string", "example": false },
+                "description": {
+                  "type": "string",
+                  "example": "Hi, my name is Amy. I am a big sweetheart who is looking for an active human to love and call my own. When it comes to K-9 companions I prefer the respectable and calmer kind. I have met some of those silly little things humans called cats, and they aren't so bad. Don't let my age fool you if you are looking for an active lady come down to the shelter and say hi. I hope to see you soon."
+                },
+                "imageURL": {
+                  "type": "string",
+                  "example": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/65079634/2/?bust=1687373191&width=720"
+                },
+                "ownerID": { "type": "string", "example": null },
+                "id": {
+                  "type": "string",
+                  "example": "649840a6b04966480c517123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Name,species,breed,age,sex are required"
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "tags": ["pet"],
+        "description": "Returns a full info about a chosen pet. No rights required",
+        "summary": "Get current information about pet by id",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": ["name", "species", "breed", "age", "sex"],
+              "properties": {
+                "name": { "type": "string", "example": "Amy" },
+                "species": { "type": "string", "example": "dog" },
+                "breed": {
+                  "type": "string",
+                  "example": "Louisiana Catahoula Leopard Dog"
+                },
+                "age": { "type": "string", "example": "8 years" },
+                "sex": { "type": "string", "example": "Female" },
+                "taken": { "type": "string", "example": false },
+                "description": {
+                  "type": "string",
+                  "example": "Hi, my name is Amy. I am a big sweetheart who is looking for an active human to love and call my own. When it comes to K-9 companions I prefer the respectable and calmer kind. I have met some of those silly little things humans called cats, and they aren't so bad. Don't let my age fool you if you are looking for an active lady come down to the shelter and say hi. I hope to see you soon."
+                },
+                "imageURL": {
+                  "type": "string",
+                  "example": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/65079634/2/?bust=1687373191&width=720"
+                },
+                "ownerID": { "type": "string", "example": null },
+                "id": {
+                  "type": "string",
+                  "example": "649840a6b04966480c517123"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pet was not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["pet"],
+        "description": "Change information about pet by id. Write rights required.",
+        "summary": "Change information about pet by id",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "New Pet object ",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "species", "breed", "age", "sex"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "species": { "type": "string", "example": "dog" },
+                "breed": {
+                  "type": "string",
+                  "example": "Changed breed"
+                },
+                "age": { "type": "string", "example": "9 years" },
+                "sex": { "type": "string", "example": "Female" },
+                "taken": { "type": "string", "example": false },
+                "description": {
+                  "type": "string",
+                  "example": "Hi, this is changed description."
+                },
+                "imageURL": {
+                  "type": "string",
+                  "example": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/65079634/2/?bust=1687373191&width=720"
+                },
+                "ownerID": { "type": "string", "example": null }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "species", "breed", "age", "sex"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "species": { "type": "string", "example": "dog" },
+                "breed": {
+                  "type": "string",
+                  "example": "Changed breed"
+                },
+                "age": { "type": "string", "example": "9 years" },
+                "sex": { "type": "string", "example": "Female" },
+                "taken": { "type": "string", "example": false },
+                "description": {
+                  "type": "string",
+                  "example": "Hi, this is changed description."
+                },
+                "imageURL": {
+                  "type": "string",
+                  "example": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/65079634/2/?bust=1687373191&width=720"
+                },
+                "ownerID": { "type": "string", "example": null },
+                "id": {
+                  "type": "string",
+                  "example": "649840a6b04966480c517123"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["pet"],
+        "description": "Delete a pet by id. Write rights required.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Delete a pet by id",
+        "responses": {
+          "200": {
+            "description": "Pet deleted"
+          },
+          "404": {
+            "description": "Pet was not found"
+          }
+        }
+      }
+    },
+
+    "/users/": {
+      "get": {
+        "tags": ["user(admin)"],
+        "summary": "Get current list of users",
+        "produces": ["application/json"],
+        "description": "Returns a list of user.Write rights required.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Ihor Pilipchuk" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMail@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010101" },
+                "password": {
+                  "type": "string",
+                  "example": "$2b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517556",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32533"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["user(admin)"],
+        "summary": "Add a user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "description": "Adds a user to the user list. Write rights required.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User's object that needs to be added ",
+            "required": true,
+            "schema": { "$ref": "#/definitions/User" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Ihor Pilipchuk" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMail@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010101" },
+                "password": {
+                  "type": "string",
+                  "example": "$2b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517556",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32533"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Name,email,password,phone number required"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["user(admin)"],
+        "summary": "Get current information about user by id",
+        "description": "Returns a full info about a user by id. Write rights required.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Ihor Pilipchuk" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMail@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010101" },
+                "password": {
+                  "type": "string",
+                  "example": "$2b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517556",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32533"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User was not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["user(admin)"],
+        "description": "Change information about user by id. Write rights required.",
+        "summary": "Change information about user by id",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMailChanged@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010111" },
+                "password": {
+                  "type": "string",
+                  "example": "changedPassword"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517551",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32531"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "phoneNumber", "password"],
+              "properties": {
+                "name": { "type": "string", "example": "Changed Name" },
+                "email": {
+                  "type": "string",
+                  "example": "exampleMailChanged@gmail.com"
+                },
+                "phoneNumber": { "type": "string", "example": "+380101010111" },
+                "password": {
+                  "type": "string",
+                  "example": "12b$10$GT4CCvXq3IB5OgqpO7JhweynRnS/RQKxB2fCQsP.mY9ItWs.JG2/2"
+                },
+                "favorites": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "649840a6b04966480c517551",
+                    "649840a6b04966480c517552"
+                  ]
+                },
+                "rights": { "type": "string", "example": "read" },
+                "address": {
+                  "type": "string",
+                  "example": "183 Main St.Cantonment, FL 32531"
+                },
+                "isActivated": { "type": "boolean", "example": true },
+                "activationLink": {
+                  "type": "string",
+                  "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "64bc1a05a3e31346676e8e29"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User was not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["user(admin)"],
+        "description": "Delete a user by id. Write rights required.",
+        "summary": "Delete a user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted"
+          },
+          "404": {
+            "description": "User was not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": ["name", "email", "phoneNumber", "password"],
+      "properties": {
+        "name": { "type": "string", "example": "Ihor Pilipchuk" },
+        "email": { "type": "string", "example": "exampleMail@gmail.com" },
+        "phoneNumber": { "type": "string", "example": "+380101010101" },
+        "password": { "type": "string", "example": "examplePassword123" },
+        "favorites": {
+          "type": "array",
+          "items": { "type": "string" },
+          "example": ["649840a6b04966480c517556", "649840a6b04966480c517552"]
+        },
+        "rights": { "type": "string", "example": "read" },
+        "address": {
+          "type": "string",
+          "example": "183 Main St.Cantonment, FL 32533"
+        },
+        "isActivated": { "type": "boolean", "example": false },
+        "activationLink": {
+          "type": "string",
+          "example": "c33a3736-b934-4908-9f68-795cf25e7e36"
+        }
+      }
+    },
+    "Pet": {
+      "type": "object",
+      "required": ["name", "species", "breed", "age", "sex"],
+      "properties": {
+        "name": { "type": "string", "example": "Amy" },
+        "species": { "type": "string", "example": "dog" },
+        "breed": {
+          "type": "string",
+          "example": "Louisiana Catahoula Leopard Dog"
+        },
+        "age": { "type": "string", "example": "8 years" },
+        "sex": { "type": "string", "example": "Female" },
+        "taken": { "type": "string", "example": false },
+        "description": {
+          "type": "string",
+          "example": "Hi, my name is Amy. I am a big sweetheart who is looking for an active human to love and call my own. When it comes to K-9 companions I prefer the respectable and calmer kind. I have met some of those silly little things humans called cats, and they aren't so bad. Don't let my age fool you if you are looking for an active lady come down to the shelter and say hi. I hope to see you soon."
+        },
+        "imageURL": {
+          "type": "string",
+          "example": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/65079634/2/?bust=1687373191&width=720"
+        },
+        "ownerID": { "type": "string", "example": null }
+      }
+    }
+  }
+}
