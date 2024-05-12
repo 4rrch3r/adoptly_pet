@@ -101,18 +101,20 @@ const deleteUser = async (req, res, next) => {
 };
 const getCurrentUser = async (req, res, next) => {
   try {
+   
     var payload = JSON.parse(
-      Buffer.from(req.cookies.access_token.split(".")[1], "base64").toString(
+      Buffer.from((req.get('Authorization').split(' ')[1]).split(".")[1], "base64").toString(
         "utf8"
       )
     );
+   
     const user = await userModel.findById(payload.id).exec();
     if (!user) {
       throw new apiError(404, "User was not found");
     }
-    if (!user.isActivated) {
-      throw new apiError(400, `Your account was not activated`);
-    }
+    // if (!user.isActivated) {
+    //   throw new apiError(400, `Your account was not activated`);
+    // }
     return res.status(200).json(user);
   } catch (err) {
     return next(err);
@@ -121,7 +123,7 @@ const getCurrentUser = async (req, res, next) => {
 const putCurrentUser = async (req, res, next) => {
   try {
     var payload = JSON.parse(
-      Buffer.from(req.cookies.access_token.split(".")[1], "base64").toString(
+      Buffer.from((req.get('Authorization').split(' ')[1]).split(".")[1], "base64").toString(
         "utf8"
       )
     );
@@ -129,19 +131,19 @@ const putCurrentUser = async (req, res, next) => {
     if (!user) {
       throw new apiError(404, "User was not found");
     }
-    if (!user.isActivated) {
-      throw new apiError(400, `Your account was not activated`);
-    }
+    // if (!user.isActivated) {
+    //   throw new apiError(400, `Your account was not activated`);
+    // }
     const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(req.body.password, salt);
+   // const hashedPassword = await bcryptjs.hash(req.body.password, salt);
     const updatedUser = await userModel.findByIdAndUpdate(
       payload.id,
       {
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPassword,
-        phoneNumber: req.body.phoneNumber,
-        address: req.body.address,
+        //name: req.body.name,
+        //email: req.body.email,
+        //password: hashedPassword,
+        //phoneNumber: req.body.phoneNumber,
+        //address: req.body.address,
         favorites: req.body.favorites,
       },
       { new: true }

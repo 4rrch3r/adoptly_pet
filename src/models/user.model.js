@@ -14,8 +14,7 @@ var userSchema = new Schema({
   },
   phoneNumber: {
     type: String,
-    required: [true, "Phone number of the user is required"],
-    unique: true,
+    default: '',
   },
   password: {
     required: [true, "Password of the user is required"],
@@ -32,6 +31,7 @@ var userSchema = new Schema({
   },
   address: {
     type: String,
+    default: '',
   },
   isActivated: {
     type: Boolean,

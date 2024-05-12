@@ -3,7 +3,8 @@ const apiError = require("./apiError.js");
 
 const checkRights = (requiredRight) => async (req, res, next) => {
   try {
-    const token = req.cookies.access_token;
+    const token = req.get('Authorization').split(' ')[1]
+    console.log(token)
     if (!token) {
       throw new apiError(401, "Unauthorized");
     }

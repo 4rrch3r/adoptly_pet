@@ -10,6 +10,8 @@ const swaggerOutput = require('../docs/swaggerOutput.json');
 const PROJECT_NAME = process.env.PROJECT_NAME;
 const mongoose = require('mongoose')
 
+app.disable('etag');
+
 //middlewares
 app.use(cors());
 app.use(morgan("tiny"));
@@ -32,13 +34,13 @@ app.use((err, req, res, next) => {
     //duplication error, as it isn't mongoose type error
     if(err.code==11000)
       return res.status(400).json({ message:err.message,stack:err.stack  });
-
     next(err);
   });
 
 //default error handler
 app.use((err,req,res,next)=>
 {
+  console.log(err)
     const status = err.statusCode || 500;
     const message = err.message||'Internal server error';
 

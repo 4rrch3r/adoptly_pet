@@ -4,7 +4,7 @@ const apiError = require('../utils/apiError');
 
 const getPets =async(req,res,next)=>{
 try{
-    const pets = await petModel.find({}).select('name species breed age sex description imageURL');
+    const pets = await petModel.find({}).select('name species taken breed age sex description imageURL');
     return res.status(200).json(pets);
 }
 catch(err)
@@ -68,7 +68,9 @@ const putPet = async(req,res,next)=>{
             description:req.body.description,
             imageURL:req.body.imageURL,
             ownerID:req.body.ownerID,
-        },{new:true,runValidators: true});
+        },{new:true,
+            //runValidators: true
+        });
         return res.status(200).json(updatedPet);
     }
     catch(err)

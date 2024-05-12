@@ -68,7 +68,7 @@ const login = async (req, res, next) => {
         httpOnly: true,
       })
       .status(200)
-      .json({ message: "login success" });
+      .json({ message: "login success",access_token:token });
   } catch (err) {
     return next(err);
   }
