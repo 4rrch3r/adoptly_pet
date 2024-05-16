@@ -46,6 +46,18 @@ const postPet = async(req,res,next)=>{
         return next(err);
     }
 };
+const getTakenPets = async(req,res,next)=>{
+    try{
+        const pets = await petModel.find({ taken: true });
+        return res.status(200).json(pets);
+        
+    }
+    catch(err)
+    {
+        return next(err);
+    }
+};
+
 const putPet = async(req,res,next)=>{
     try{
         if(req.user.rights == "read"&&req.user.isActivated==false)
@@ -96,6 +108,7 @@ const deletePet = async(req,res,next)=>{
 module.exports={
     getPets,
     getPet,
+    getTakenPets,
     postPet,
     putPet,
     deletePet

@@ -23,6 +23,7 @@ app.use(`/${PROJECT_NAME}`, routes);
 
 //mongoose validation handler
 app.use((err, req, res, next) => {
+  console.log(err)
     if (err instanceof mongoose.Error.ValidationError) {
       const validationErrors = {};
       // Extract validation error messages for each field
